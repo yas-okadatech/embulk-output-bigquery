@@ -1,6 +1,7 @@
 require 'time'
 require 'time_with_zone'
 require 'json'
+require 'bigdecimal'
 require_relative 'helper'
 
 module Embulk
@@ -14,6 +15,7 @@ module Embulk
 
         DEFAULT_TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S.%6N" # BigQuery timestamp format
         DEFAULT_TIMEZONE         = "UTC"
+        DEFAULT_SCALE            = 9
 
         # @param [Hash] task
         # @option task [String] default_timestamp_format
@@ -29,6 +31,7 @@ module Embulk
             column_name   = column[:name]
             embulk_type   = column[:type]
             column_option = column_options_map[column_name] || {}
+            scale         = column_option['scale'] || DEFAULT_SCALE
             self.new(
               embulk_type, column_option['type'],
               timestamp_format: column_option['timestamp_format'],
@@ -36,6 +39,7 @@ module Embulk
               strict: column_option['strict'],
               default_timestamp_format: default_timestamp_format,
               default_timezone: default_timezone,
+              scale: scale
             ).create_converter
           end
         end
@@ -46,7 +50,8 @@ module Embulk
           embulk_type, type = nil,
           timestamp_format: nil, timezone: nil, strict: nil,
           default_timestamp_format: DEFAULT_TIMESTAMP_FORMAT,
-          default_timezone: DEFAULT_TIMEZONE
+          default_timezone: DEFAULT_TIMEZONE,
+          scale: DEFAULT_SCALE
         )
           @embulk_type      = embulk_type
           @type             = (type || Helper.bq_type_from_embulk_type(embulk_type)).upcase
@@ -55,6 +60,7 @@ module Embulk
           @timezone         = timezone || default_timezone
           @zone_offset      = TimeWithZone.zone_offset(@timezone)
           @strict           = strict.nil? ? true : strict
+          @scale            = scale
         end
 
         def create_converter
@@ -229,6 +235,13 @@ module Embulk
               next nil if val.nil?
               with_typecast_error(val) do |val|
                 JSON.parse(val)
+              end
+            }
+          when 'NUMERIC'
+            Proc.new {|val|
+              next nil if val.nil?
+              with_typecast_error(val) do |val|
+                BigDecimal(val).round(@scale, BigDecimal::ROUND_CEILING)
               end
             }
           else
