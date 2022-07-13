@@ -1,7 +1,7 @@
 source 'https://rubygems.org/'
 
 gemspec
-gem 'embulk', '< 0.10' # INFO: v0.9系のembulkを使用するためのバージョン指定、参考: https://zenn.dev/hiroysato/articles/957b1b4f77d549
+gem 'embulk', '< 0.10'
 gem 'liquid', '= 4.0.0' # the version included in embulk.jar
 gem 'embulk-parser-none'
 gem 'embulk-parser-jsonl'
