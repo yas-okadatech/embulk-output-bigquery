@@ -301,6 +301,10 @@ module Embulk
             Proc.new {|val|
               val
             }
+          when 'JSON'
+            Proc.new {|val|
+              val
+            }
           else
             raise NotSupportedType, "cannot take column type #{type} for json column"
           end
