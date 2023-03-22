@@ -72,6 +72,7 @@ module Embulk
               raise e
             end
           rescue ::Java::Java.net.SocketException, ::Java::Java.net.ConnectException => e
+          rescue ::Java::Java.net.SocketException, ::Java::Java.net.ConnectException, ::Java::JavaxNetSsl::SSLException => e
             retry_messages = [
               'Broken pipe',
               'Connection reset',
