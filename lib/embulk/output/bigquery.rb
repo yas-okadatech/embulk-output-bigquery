@@ -412,6 +412,9 @@ module Embulk
           rescue => e
             Embulk.logger.warn("patch_table is failed")
             Embulk.logger.warn("#{e.class} : #{e.message}")
+
+            # TODO(yas-okadatech): 調査用
+            raise
           end
 
         ensure
