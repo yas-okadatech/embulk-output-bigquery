@@ -338,6 +338,15 @@ module Embulk
         @converters = ValueConverterFactory.create_converters(task, schema)
 
         self.auto_create(@task, @bigquery)
+        begin
+          bigquery.patch_table
+        rescue => e
+          Embulk.logger.warn("patch_table is failed")
+          Embulk.logger.warn("#{e.class} : #{e.message}")
+
+          # TODO(yas-okadatech): 調査用
+          raise
+        end
 
         begin
           paths = []
@@ -405,16 +414,6 @@ module Embulk
                 bigquery.copy(task['temp_table'], task['table'], write_disposition: 'WRITE_TRUNCATE')
               end
             end
-          end
-
-          begin
-            bigquery.patch_table
-          rescue => e
-            Embulk.logger.warn("patch_table is failed")
-            Embulk.logger.warn("#{e.class} : #{e.message}")
-
-            # TODO(yas-okadatech): 調査用
-            raise
           end
 
         ensure
