@@ -408,10 +408,14 @@ module Embulk
           end
 
           begin
+            sleep 30 # for debug
             bigquery.patch_table
           rescue => e
             Embulk.logger.warn("patch_table is failed")
             Embulk.logger.warn("#{e.class} : #{e.message}")
+
+            # TODO(yas-okadatech): 調査用
+            raise
           end
 
         ensure

@@ -537,6 +537,7 @@ module Embulk
               end
             end
 
+            Embulk.logger.info { "debug: table.schema.fields #{table.schema.fields}" }
             fields = patch_description(table.schema.fields, @task['column_options'])
             table.schema.update!(fields: fields)
             table_id = Helper.chomp_partition_decorator(@task['table'])
