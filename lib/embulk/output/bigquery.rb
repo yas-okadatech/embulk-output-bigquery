@@ -407,12 +407,7 @@ module Embulk
             end
           end
 
-          begin
-            bigquery.patch_table
-          rescue => e
-            Embulk.logger.warn("patch_table is failed")
-            Embulk.logger.warn("#{e.class} : #{e.message}")
-          end
+          bigquery.patch_table
 
         ensure
           begin
