@@ -538,6 +538,8 @@ module Embulk
             end
 
             fields = patch_description(table.schema.fields, @task['column_options'])
+            return if fields.empty?
+
             table.schema.update!(fields: fields)
             table_id = Helper.chomp_partition_decorator(@task['table'])
             with_network_retry { client.patch_table(@project, @dataset, table_id, table) }

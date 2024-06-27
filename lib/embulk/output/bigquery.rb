@@ -407,7 +407,11 @@ module Embulk
             end
           end
 
-          bigquery.patch_table
+          begin
+            bigquery.patch_table
+          rescue StandardError => e
+            Embulk.logger.info { "bigquery.patch_table error: #{e.message}" }
+          end
 
         ensure
           begin
